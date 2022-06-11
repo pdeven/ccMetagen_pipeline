@@ -1,8 +1,23 @@
+import os
 
+# generic lambdas
+sort_dictionary_key_value = lambda dictionary : [ {iter:sorted(values)} for iter,values in sorted(dictionary.items())]
+
+
+# Methods
 def singularity_call(tool, command_list):
-    # singularity exec ccmetagen1.4.0.sif kma -1t1 -mem_mode -and -apm f -nc -status -verbose -ef -t 5 -ipe /mnt/data/ccmetagene/sample_data/16s_rna_fastq_files/O-KE2_R1.fq.gz /mnt/data/ccmetagene/sample_data/16s_rna_fastq_files/O-KE2_R2.fq.gz -tmp /mnt/data/ccmetagene/sample_data/temp_directory -o results/O-KE1_output -t_db /mnt/data/ccmetagene/database/ncbi_16s 2>&1 | tee /mnt/data/ccmetagene/sample_data/log_dir/O-KE1_output_kma.log
     commands = " ".join(command_list)
-
     singularity_base_command = "singularity exec " + tool + commands
-
     return singularity_base_command
+
+def get_fastq_files_set(fastq_files_path):
+    split_before = lambda st : st.split("_")[0]
+    fastq_files_directory = os.listdir(fastq_files_path)
+    file_set = set()
+    for files in fastq_files_directory: file_set.add(split_before(files))
+    file_set_map = {}
+    for single in file_set: file_set_map[single]=[]
+    for files in fastq_files_directory:
+        sample_prefix = split_before(files)
+        file_set_map[sample_prefix].append(os.path.realpath(os.path.join(fastq_files_path, files)))
+    return file_set_map

@@ -5,16 +5,20 @@ import os
 import subprocess
 from base_config import KMA_INDEXED_DATABASE , TEMPORARY_DIRECTORY , LOG_DIRECTORY , RESULTS_FOLDER
 from basic_function import singularity_call
-from tools_config import k_mer_align
+from tools_config import k_mer_align , taxonomic_assign
 
 def kmer_alignment(
     PREFIX,
     R1,
     R2
     ):
+
+    os.makedirs( os.path.join ( RESULTS_FOLDER , PREFIX ), exist_ok = True )
     
-    RESULTS_PATH = os.path.join(RESULTS_FOLDER , "result_" + PREFIX , PREFIX + "_kma")
-    LOG_PATH = os.path.join(LOG_DIRECTORY, "log_"+ PREFIX, PREFIX +"_log")
+    os.makedirs( os.path.join ( LOG_DIRECTORY , PREFIX ), exist_ok = True )
+
+    RESULTS_PATH = os.path.join(RESULTS_FOLDER , PREFIX , PREFIX + "_kma")
+    LOG_PATH = os.path.join(LOG_DIRECTORY, PREFIX , PREFIX +"_log")
     command = [
         "-1t1",
         "-mem_mode",
@@ -44,6 +48,22 @@ def kmer_alignment(
 
     cmd = singularity_call(k_mer_align, command)
 
+    subprocess.run(cmd, shell=True)
     
-    # subprocess.run(cmd, shell=True)
-    return cmd
+def taxonomic_assignments(
+    PREFIX
+    ):
+    
+    RESULTS_PATH = os.path.join(RESULTS_FOLDER , PREFIX , PREFIX + "_kma.res")
+    TAXONOMY_FILE_PATH = os.path.join(RESULTS_FOLDER , PREFIX , PREFIX + "_taxonomy")
+
+    command = [
+        "-i",
+        RESULTS_PATH,
+        "-o",
+        TAXONOMY_FILE_PATH
+    ]
+    
+    cmd = singularity_call(taxonomic_assign, command)
+
+    subprocess.run(cmd, shell=True)
