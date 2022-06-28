@@ -1,4 +1,6 @@
 {
-   "resources_base_path" : "/mnt/data/ccmetagen"
-   
+   "resources_base_path" : "/mnt/data/ccmetagen",
+   "memory" : "510G",
+   "disk" : "520G",
+   "cores" : 30
 }

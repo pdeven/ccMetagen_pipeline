@@ -3,19 +3,25 @@
 
 import os
 import subprocess
-from base_config import KMA_INDEXED_DATABASE , TEMPORARY_DIRECTORY , LOG_DIRECTORY , RESULTS_FOLDER
+from base_config import KMA_INDEXED_DATABASE , TEMPORARY_DIRECTORY , LOG_DIRECTORY , RESULTS_FOLDER, MEMORY , CORES , DISK 
 from basic_function import singularity_call
 from tools_config import k_mer_align , taxonomic_assign
+from toil.common import Toil
+from toil.job import Job
+from toil.realtimeLogger import RealtimeLogger
 
 def kmer_alignment(
     PREFIX,
     R1,
-    R2
+    R2,
+    memory=MEMORY,
+    cores=CORES,
+    disk=DISK
     ):
-
-    os.makedirs( os.path.join ( RESULTS_FOLDER , PREFIX ), exist_ok = True )
-    
-    os.makedirs( os.path.join ( LOG_DIRECTORY , PREFIX ), exist_ok = True )
+    res = os.path.join ( RESULTS_FOLDER , PREFIX )
+    log = os.path.join ( LOG_DIRECTORY , PREFIX )
+    os.makedirs(res, exist_ok = True )
+    os.makedirs(log, exist_ok = True )
 
     RESULTS_PATH = os.path.join(RESULTS_FOLDER , PREFIX , PREFIX + "_kma")
     LOG_PATH = os.path.join(LOG_DIRECTORY, PREFIX , PREFIX +"_log")
@@ -51,7 +57,10 @@ def kmer_alignment(
     subprocess.run(cmd, shell=True)
     
 def taxonomic_assignments(
-    PREFIX
+    PREFIX,
+    memory=MEMORY,
+    cores=CORES,
+    disk=DISK
     ):
     
     RESULTS_PATH = os.path.join(RESULTS_FOLDER , PREFIX , PREFIX + "_kma.res")
